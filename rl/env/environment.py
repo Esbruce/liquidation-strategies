@@ -6,8 +6,8 @@ import numpy as np
 class ExecutionEnv(gym.Env):
     def __init__(self, params, impact_fn_g=None, impact_fn_h=None):
         self.p = params
-        self.g = impact_fn_g or (lambda v: self.p.gamma * v)
-        self.h = impact_fn_h or (lambda v: self.p.eta * v)
+        self.g = impact_fn_g or (lambda v: self.p.gamma * v) # linear long term impact as per almgren chriss
+        self.h = impact_fn_h or (lambda v: self.p.eta * v) # linear short term impact
         self.action_space = spaces.Box(low=0, high=1, shape=(1,))
         self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(3,))
 
