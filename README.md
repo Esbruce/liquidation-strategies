@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{graphicx} % Required for inserting images
-
-\title{liquadation-strategies}
-\author{Edward Schuster-Bruce}
-\date{August 2026}
-
-\begin{document}
-
-\maketitle
-
-\section{Introduction}
-
 # liquidation-strategies
 Exploring how a optimal analytical model and a reinforcement learning model for executing large trades perform and diverge as assumptions of the analytical model are violated.
 
@@ -90,28 +77,17 @@ where the final term encodes risk aversion: holding a large residual position $x
 Taking the above objective equation the first two terms are constants, assuming that holdings are never bought back. This means they do not effect the efficacy of the trade and can be dropped. 
 $$\tilde{J}(x_1,\dots,x_{N-1}) = \frac{\tilde\eta}{\tau}\sum_{k=1}^{N}(x_{k-1}-x_k)^2 + \lambda\sigma^2\tau\sum_{k=1}^{N} x_k^2$$
 
-Every term here is a **square** of a linear expression in the $x_k$'s, multiplied by a positive coefficient ($\tilde\eta/\tau$ and $\lambda\sigma^2\tau$ respectively). Expanding the squares confirms $\tilde J$ is a sum of $x_k^2$ and $x_kx_{k-1}$ cross-terms with fixed positive/negative coefficients — i.e. $\tilde J$ is a **quadratic form** in the vector of free variables $(x_1,\dots,x_{N-1})$.
-
 ### Convexity
 
-The quadratic is convex as it is composed of squared terms with positive coefficients.  A property of this is that all zero gradient points is a global minimum. 
-
-This means the is no need to reason about second-order conditions, boundary behaviour of the objective, or compare candidate minima. To find the optimal trajectory is equivalent to finding the point where every partial derivative vanishes.
+The quadratic is convex as it is composed of squared terms with positive coefficients.  A property of this is that all zero gradient points is a global minimum. To find the optimal trajectory is equivalent to finding the point where every partial derivative vanishes.
 
 ### Taking the partial derivative and setting it to zero
 
-Pick a generic interior index $j$, with $1 \le j \le N-1$. Scanning $\tilde J$, only two terms in the impact sum involve $x_j$ (the $k=j$ term and the $k=j+1$ term), plus the direct risk term $x_j^2$:
-
-$$\tilde J \supset \frac{\tilde\eta}{\tau}\Big[(x_{j-1}-x_j)^2 + (x_j-x_{j+1})^2\Big] + \lambda\sigma^2\tau\, x_j^2$$
+Pick a generic representative interior index $j$, with $1 \le j \le N-1$ and take the partial derivative and set to zero.
 
 Differentiating with respect to $x_j$:
 
-$$\frac{\partial \tilde J}{\partial x_j} = \frac{\tilde\eta}{\tau}\Big[-2(x_{j-1}-x_j) + 2(x_j-x_{j+1})\Big] + 2\lambda\sigma^2\tau\, x_j$$
-
-Setting this to zero (the stationarity condition) and dividing by 2:
-
-$$\frac{\tilde\eta}{\tau}\Big[2x_j - x_{j-1} - x_{j+1}\Big] + \lambda\sigma^2\tau\, x_j = 0$$
-
+$$\frac{\partial \tilde J}{\partial x_j} = \frac{\tilde\eta}{\tau}\Big[-2(x_{j-1}-x_j) + 2(x_j-x_{j+1})\Big] + 2\lambda\sigma^2\tau\, x_j = 0$$
 This holds for every $j = 1,\dots,N-1$, giving a system of $N-1$ equations that together pin down the minimizing trajectory.
 
 ### Rearrange into a recursion
@@ -126,21 +102,16 @@ $$x_{j+1} - \big(2+\kappa^2\tau^2\big)x_j + x_{j-1} = 0$$
 
 This is a **linear, constant-coefficient recursion** relating each point on the optimal trajectory to its two neighbours.
 
-### Solve via the ansatz $x_j = z^j$
+### Solve via the ansatz 
+
+$x_j = z^j$
 
 For linear recursions of this type, the standard approach is to guess a solution of the form $x_j = z^j$ and find which values of $z$ are consistent with the equation. Substituting:
-
 $$z^{j+1} - (2+\kappa^2\tau^2)z^j + z^{j-1} = 0$$
 
 Dividing through by $z^{j-1}$ (assuming $z \ne 0$):
-
 $$z^2 - (2+\kappa^2\tau^2)z + 1 = 0$$
-
-This is the **characteristic equation** of the recursion. Its two roots multiply to $1$ and sum to $2+\kappa^2\tau^2 \ge 2$ — exactly the structure satisfied by $z = e^{\pm\alpha}$ for some $\alpha > 0$, since $e^\alpha \cdot e^{-\alpha} = 1$ and $e^\alpha + e^{-\alpha} = 2\cosh(\alpha)$. Defining $\alpha$ implicitly by
-
-$$\cosh(\alpha) = 1 + \frac{\kappa^2\tau^2}{2}$$
-
-the two roots of the characteristic equation are $z = e^{\alpha}$ and $z = e^{-\alpha}$.
+This is the **characteristic equation** of the recursion. The two roots of the characteristic equation are $z = e^{\alpha}$ and $z = e^{-\alpha}$.
 
 Because the recursion is linear, the general solution is any combination of the two root-solutions:
 
@@ -148,7 +119,7 @@ $$x_j = A\,e^{\alpha j} + B\,e^{-\alpha j}$$
 
 with constants $A,B$ still undetermined.
 
-### SFix the constants using boundary conditions, obtain the optimal solution
+### Fix the constants using boundary conditions, obtain the optimal solution
 
 The two boundary conditions we haven't used yet, $x_0 = X$ and $x_N = 0$, give:
 
@@ -169,7 +140,3 @@ This is the discrete Almgren-Chriss optimal execution trajectory
 ## Analysis
 
 
-
-
-
-\end{document}
