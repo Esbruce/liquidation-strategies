@@ -1,5 +1,7 @@
-# liquidation-strategies
+# Liquidation Strategies
 Exploring how a optimal analytical model and a reinforcement learning model for executing large trades perform and diverge as assumptions of the analytical model are violated.
+
+<img width="1902" height="1043" alt="image" src="https://github.com/user-attachments/assets/c52f3a1d-1331-48e2-82be-2abc0f57b5d6" />
 
 # Project Overview
 
