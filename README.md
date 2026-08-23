@@ -3,7 +3,7 @@ Exploring how a optimal analytical model and a reinforcement learning model for 
 
 # Project Overview
 
-Recently I completed a university project on wave energy converter control methods, and came across some interesting hamiltonian based mathematics. I wanted to see what other applications these could have and this project is a result of that. 
+Recently I completed a university project on wave energy converter control methods, and came across some interesting interesting mathematical techniques. I wanted to find other applications of the mathematics, especially in finance and trading, I then came across a paper on Almberg-Chriss trade execution model. This project implements there model and mathematics, tests the sensitivity of it to violations of its assumptions, and tests out alternative self-supervised optimisation techniques. 
 
 The problem investigated is how to best liquidate a large holding, whilst minimising the risk of volatility in the market and minimising transaction costs arising from long and short term market impact.
 
