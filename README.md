@@ -133,10 +133,6 @@ $$x_j = X\,\frac{\sinh\big(\alpha(N-j)\big)}{\sinh(\alpha N)}$$
 
 This is the discrete Almgren-Chriss optimal execution trajectory
 
-## Reinforcement Learning Strategy
-
-## Test Environment
-
 ## Results
 
 ## Analysis
