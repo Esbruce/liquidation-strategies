@@ -6,14 +6,16 @@ class ACExecute():
         self.p = params
         self.g = impact_fn_g or (lambda v: self.p.gamma * v) # linear permanent impact as per almgrenchriss
         self.h = impact_fn_h or (lambda v: self.p.eta * v) # temporary impact
-        self.k2 = self.p.lam * self.p.sigma**2 / self.p.eta
+        initial_lam = (
+            self.p.lam[0] if isinstance(self.p.lam, (list, np.ndarray)) else self.p.lam
+        )
 
-        # kappa is a constant of the problem 
-        self.kappa = np.arccosh(0.5 * self.k2 * self.p.tau**2 + 1) / self.p.tau
+        self._recompute_kappa(lam_val=initial_lam)
 
         self.cost = 0
 
         self.results = {
+        'repeat': [],
         'step': [],
         'time': [],
         'holdings': [],
@@ -22,30 +24,71 @@ class ACExecute():
         'rate': [],
         'step_cost': [],
         'cumulative_cost': [],
+        'X': [],
+        'S0': [],
+        'N': [],
+        'T': [],
+        'lam': [],
+        'gamma': [],
+        'sigma': [],
+        'eta': [],
+        'mu': [],
+        'std': [],
+        'noise_type':[],
         }
 
-    def reset(self, seed=None):
+    def _recompute_kappa(self, lam_val=None):
+        # Use the passed lam_val or fall back to current active self.p.lam
+        active_lam = lam_val if lam_val is not None else self.p.lam
+
+        # Handle edge case if a list is still passed directly to self.p.lam
+        if isinstance(active_lam, (list, np.ndarray)):
+            active_lam = active_lam[0]
+
+        self.k2 = active_lam * (self.p.sigma**2) / self.p.eta
+        self.kappa = np.arccosh(0.5 * self.k2 * (self.p.tau**2) + 1) / self.p.tau
+
+    def reset(self, seed=None, repeat=None, active_lam=None):
+        if seed is not None:
+            np.random.seed(seed)
+
         self.k = 0
         self.X = self.p.X
         self.S = self.p.S0
         self.cost = 0
+        self.p.repeat = repeat
+
+        self._recompute_kappa(lam_val=active_lam)
 
         self.results = {
-        'step': [],
-        'time': [],
-        'holdings': [],
-        'price': [],
-        'n_k': [],
-        'rate': [],
-        'step_cost': [],
-        'cumulative_cost': [],
+            "repeat": [],
+            "step": [],
+            "time": [],
+            "holdings": [],
+            "price": [],
+            "n_k": [],
+            "rate": [],
+            "step_cost": [],
+            "cumulative_cost": [],
+            "X": [],
+            "S0": [],
+            "N": [],
+            "T": [],
+            "lam": [],
+            "gamma": [],
+            "sigma": [],
+            "eta": [],
+            "mu": [],
+            "std": [],
+            "noise_type": [],
         }
 
-        self._record()  # log the t=0 starting state
-
+        self._record()
         return self._obs(), {}
+
     
     def _record(self, n_k=np.nan, rate=np.nan, step_cost=np.nan, cumulative_cost=None):
+        self.results['repeat'].append(self.p.repeat)
         self.results['step'].append(self.k)
         self.results['time'].append(self.k * self.p.tau)
         self.results['holdings'].append(self.X)
@@ -57,6 +100,17 @@ class ACExecute():
             self.cost if cumulative_cost is None else cumulative_cost
         )
 
+        self.results['X'].append(self.p.X)
+        self.results['S0'].append(self.p.S0)
+        self.results['N'].append(self.p.N)
+        self.results['T'].append(self.p.T)
+        self.results['lam'].append(self.p.lam)
+        self.results['gamma'].append(self.p.gamma)
+        self.results['sigma'].append(self.p.sigma)
+        self.results['eta'].append(self.p.eta)
+        self.results['mu'].append(self.p.mu)
+        self.results['std'].append(self.p.std)
+        self.results['noise_type'].append(self.p.noise)  
 
     def optimal_holdings(self, step_idx):
         """Optimal remaining holdings x_j at a given step index (0..N)."""
@@ -76,14 +130,25 @@ class ACExecute():
 
         n_k = self.optimal_action()
         rate = n_k / self.p.tau
-
         eps = self.p.noise()
 
-        # price evolves: permanent impact pushes price down as you sell, plus noise
+        S_prev = self.S  # price before this step's impact+noise, if you want pre-trade price instead
+
         self.S = self.S - self.p.tau * self.g(rate) + self.p.sigma * np.sqrt(self.p.tau) * eps
 
-        step_cost = self.p.tau * self.X * self.g(rate) + n_k * self.h(rate)
+        step_cost = n_k * (self.p.S0 - self.S)   # realized shortfall vs arrival price
         self.cost += step_cost
+
+        # n_k = self.optimal_action()
+        # rate = n_k / self.p.tau
+
+        # eps = self.p.noise()
+
+        # # price evolves: permanent impact pushes price down as you sell, plus noise
+        # self.S = self.S - self.p.tau * self.g(rate) + self.p.sigma * np.sqrt(self.p.tau) * eps
+
+        # step_cost = self.p.tau * self.X * self.g(rate) + n_k * self.h(rate)
+        # self.cost += step_cost
 
         self.X -= n_k
         self.k += 1
