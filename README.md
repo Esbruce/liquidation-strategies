@@ -185,7 +185,7 @@ The two boundary conditions we haven't used yet, $x_0 = X$ and $x_N = 0$, give:
 
 $$A + B = X, \qquad Ae^{\alpha N} + Be^{-\alpha N} = 0$$
 
-Solving this $2\times2$ system for $A$ and $B$ and substituting back (using $\sinh(u) = \tfrac12(e^u-e^{-u})$ to simplify) yields the closed-form optimal trajectory:
+Solving this $2\times2$ system for $A$ and $B$ and substituting back (using $\sinh(u) = 0.5(e^u-e^{-u})$ to simplify) yields the closed-form optimal trajectory:
 
 $$x_j = X\,\frac{\sinh\big(\alpha(N-j)\big)}{\sinh(\alpha N)}$$
 
