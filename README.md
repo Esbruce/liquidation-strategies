@@ -1,6 +1,9 @@
 # Liquidation Strategies
 Implementing and evaluating the Almgren-Chriss model and strategy for liquidising large holdings.
 
+<img width="750" height="500" alt="image" src="https://github.com/user-attachments/assets/bacf0965-5e74-42de-89eb-6bf961c57f73" />
+
+
 # Project Motivation and Overview
 
 In my second year Engineering Mathematics module "Principles of Physical Modelling", we had a introduction to Lagrangian mechanics. In this module we learnt how to derive second order equations of motions using the Euler-Lagrange Equations. Initially the results seemed surprising and impressive and I wanted to delve deeper into why the maths works and where else is was applicable - leading me to following problem. 
@@ -193,7 +196,7 @@ This is the discrete Almgren-Chriss optimal execution trajectory
 
 ## Efficiency Frontier:
 
-<img width="1536" height="855" alt="image" src="https://github.com/user-attachments/assets/048772a5-66a5-4fbe-821b-2b32eccea7dc" />
+<img width="750" height="500" alt="image" src="https://github.com/user-attachments/assets/048772a5-66a5-4fbe-821b-2b32eccea7dc" />
 
 Here is a graph I produced the shows the classic Almgren-Chriss efficiency frontier. The graph has expected cost of the strategy vs the exposure to volatility. 
 This plot is produced by calculating Expected Cost and Variance for different values of $\lambda$ (risk aversion parameter).
