@@ -75,7 +75,9 @@ Term 3: Negative price term that is a function of the trading velocity and propo
 ### Short-term Price impacts of each sale:
 Short term changes in the price of a asset caused by the presence of the trade in the market. 
 
-Mathematically these can be written as: $\tilde{S_k} = S_{k} - h(n_k / \tau)$ 
+Mathematically these can be written as: 
+
+$$\tilde{S_k} = S_{k} - h(n_k / \tau)$$
 
 Term 1: Previous Price
 
@@ -93,45 +95,37 @@ $$C = \sum_{k=1}^{N} \tau x_k g(n_k/\tau) + \sum_{k=1}^{N} n_k h(n_k/\tau) - \si
 
 This decomposes cost into permanent-impact drag, temporary-impact drag, and a noise contribution.
 
-**Linear impact assumption:** Almgren-Chriss assume that price impact scales linearly with trading velocity $v = n_k/\tau$:
+### Linear impact assumption:
 
-The impact functions $g(v)$ and $h(v)$ in the above equations are defined as per the Almgren-Chriss model.
+Almgren-Chriss assume that price impact scales linearly with trading velocity $v = n_k/\tau$:
 
-$$g(v) = \gamma v, \qquad h(v) = \xi\,\mathrm{sgn}(v) + \eta v$$
+The impact functions $g(v)$ and $h(v)$ in the above equations are defined, as per the Almgren-Chriss model.
 
-so permanent impact is proportional to trading rate, and temporary impact combines a fixed cost-per-share $\xi$ (spread/slippage) with a rate-proportional component $\eta$. Substituting:
+$$g(v) = \gamma v, \qquad h(v) = \xi \mathrm{sgn}(v) + \eta v$$
 
-$$\tau x_k\, g(n_k/\tau) = \gamma x_k n_k, \qquad n_k\, h(n_k/\tau) = \xi|n_k| + \frac{\eta}{\tau}n_k^2$$
+so permanent impact $g(v)$ is proportional to trading rate, and temporary impact $h(v)$ combines a fixed cost-per-share $\xi$ (spread/slippage) with a rate-proportional component $\eta$. 
 
-**Reducing the permanent-impact sum.** Since $n_k = x_{k-1} - x_k$, we have $x_{k-1}^2 - x_k^2 = 2x_k n_k + n_k^2$, so
+### Formulating Objective Function:
 
-$$x_k n_k = \frac{1}{2}\left[(x_{k-1}^2 - x_k^2) - n_k^2\right]$$
+Substituting the impact functions and rearranging them cost becomes:
 
-Summing over $k = 1, \dots, N$ leaves the first term, using $x_0 = X$ and $x_N = 0$:
+$$C = \frac12\gamma X^2 + \xi\sum_{k=1}^N|n_k| + \frac{\tilde\eta}{\tau}\sum_{k=1}^N n_k^2 - \sigma\sqrt\tau\sum_{k=1}^N x_k\epsilon_k$$
 
-$$\sum_{k=1}^{N} x_k n_k = \frac{1}{2}X^2 - \frac{1}{2}\sum_{k=1}^{N} n_k^2$$
+note* $\tilde{\eta}$ was introduce to improve readability $\tilde\eta \equiv \eta - (\gamma\tau) / 2 $
 
-so the permanent-impact contribution becomes $\gamma\left(\tfrac{1}{2}X^2 - \tfrac{1}{2}\sum_k n_k^2\right)$.
+**Taking expectations** under i.i.d. noise ($\mathbb{E}[\epsilon_k]=0$, $\mathrm{Var}(\epsilon_k)=1$), the noise term vanishes in mean and contributes $\sigma^2\tau\sum_k x_k^2$ to the variance:
 
-**Substituting back**,  cost becomes:
+$$\mathbb{E}[C] = \frac12\gamma X^2 + \xi\sum_{k=1}^N|n_k| + \frac{\tilde\eta}{\tau}\sum_{k=1}^N n_k^2 \qquad \mathbb{V}[C] = \sigma^2\tau\sum_{k=1}^N x_k^2$$
 
-$$C = \frac{1}{2}\gamma X^2 + \xi\sum_{k=1}^{N}|n_k| + \left(\frac{\eta}{\tau} - \frac{\gamma}{2}\right)\sum_{k=1}^{N} n_k^2 - \sigma\sqrt{\tau}\sum_{k=1}^{N} x_k\epsilon_k$$
+**Objective:**
 
-Defining $\tilde{\eta} \equiv \eta - \dfrac{\gamma\tau}{2}$ so the coefficient reads $\tilde{\eta}/\tau$: 
+$$J = \mathbb{E}[C] + \lambda \mathbb{V}[C] = \frac12\gamma X^2 + \xi\sum_{k=1}^N|n_k| + \frac{\tilde\eta}{\tau}\sum_{k=1}^N n_k^2 + \lambda\sigma^2\tau\sum_{k=1}^N x_k^2$$
 
-$$C = \frac{1}{2}\gamma X^2 + \xi\sum_{k=1}^{N}|n_k| + \frac{\tilde{\eta}}{\tau}\sum_{k=1}^{N} n_k^2 - \sigma\sqrt{\tau}\sum_{k=1}^{N} x_k\epsilon_k$$
+where $\lambda$ trades off expected cost against the price risk of holding residual inventory $x_k$ over the remaining horizon.
 
-Assuming non-bias Guassian noise  - $\mathbb{E}[\epsilon_k] = 0$, $\mathrm{Var}(\epsilon_k) = 1$, independent across $k$:
+### Drawing Parallel's with Lagrangian Mechanics:
 
-$$\mathbb{E}[C] = \frac{1}{2}\gamma X^2 + \xi\sum_{k=1}^{N}|n_k| + \frac{\tilde{\eta}}{\tau}\sum_{k=1}^{N} n_k^2$$
 
-$$\mathbb{V}[C] = \sigma^2\tau\sum_{k=1}^{N} x_k^2$$
-
-**The objective function** is therefore:
-
-$$J = \mathbb{E}[C] + \lambda\,\mathbb{V}[C] = \frac{1}{2}\gamma X^2 + \xi\sum_{k=1}^{N}|n_k| + \frac{\tilde{\eta}}{\tau}\sum_{k=1}^{N} n_k^2 + \lambda\sigma^2\tau\sum_{k=1}^{N} x_k^2$$
-
-where the final term encodes risk aversion: holding a large residual position $x_k$ exposes the trader to price risk over the remaining horizon, and $\lambda$ controls the trade-off against impact cost.
 
 ## Optimal Solution to the Objective Function
 
