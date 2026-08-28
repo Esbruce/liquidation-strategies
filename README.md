@@ -3,15 +3,33 @@ Implementing and evaluating the Almberg-Chriss model and strategy for liquidisin
 
 <img width="1902" height="1043" alt="image" src="https://github.com/user-attachments/assets/c52f3a1d-1331-48e2-82be-2abc0f57b5d6" />
 
-# Project Overview
+# Project Motivation and Overview
 
-Recently I completed a university project on wave energy converter control methods, and came across some interesting interesting mathematical techniques. I wanted to find other applications of the mathematics, especially in finance and trading, I then came across a paper on Almberg-Chriss trade execution model. This project implements there model and mathematics, tests the sensitivity of it to violations of its assumptions, and tests out alternative self-supervised optimisation techniques. 
+In my second year Engineering Mathematics module "Principles of Physical Modelling", we had a introduction to Lagrangian mechanics. In this module we learnt how to derive second order equations of motions using the Euler-Lagrange Equations. Initially the results seemed surprising and impressive and I wanted to delve deeper into why the maths works and where else is was applicable - leading me to following problem. 
 
-The problem investigated is how to best liquidate a large holding, whilst minimising the risk of volatility in the market and minimising transaction costs arising from long and short term market impact.
+In mechanics the Lagrangian represents the difference in kinetic and potential energy of a body/particle $L = T - U$ where $T$ is the kinetic energy and $U$ is the potential energy.
+
+The Lagrangian therefore is related to the the coordinates and motion of the body. $L = L(q(t),\dot{q}(t),t)$
+
+Interesting the way this relates to the equation of motion of for example a ball in the air is by the action functional (function that takes a function (ie a path through space $q(t)$ ) and returns a value).
+
+The actional functional $S= \int_{t_1}^{t2} L dt$ and the stationarity of this gives the equation of motion. 
+
+This project explores the Almberg-Chriss strategy for liquidation a large holding.  The problem is how to best liquidate a large holding, whilst minimising the risk of volatility in the market and minimising transaction costs arising from long and short term market impact.
 
 Mathematically the problem can be described as follows:
 
-A holding of size $X$ is being sold in $K$ increments such that the quantity of each sale is notated as $n_1, n_k ... n_N$. $x_k$ is the remaining amount of the holding that needs to be sold. This is happening in a time frame of $T$ such that all holdings are sold by $t=T$
+The optimisation problem is given you have $X$ shares to liquidate over $N$ trading blocks, how many shares $n_k$ should be sold in each trading block, in order to minimise the expected cost of the sale. 
+
+The maths that draws parallel between the Almberg-Chriss and Lagrangian Mechanics is the use of calculus of variation used to find the stationarity of a action functional. 
+
+In the case of Almberg-Chriss the action functional takes the trajectory of holdings kept at each trading block in a liquidation and returns the cost of the sale. The aim is to minimise this. 
+
+## Mathematics of the Problem
+
+### Parameters:
+
+
 
 ### Long term impacts of each sale:
 are those which affect the price of the holding after the sale is completed. 
@@ -133,8 +151,12 @@ $$x_j = X\,\frac{\sinh\big(\alpha(N-j)\big)}{\sinh(\alpha N)}$$
 
 This is the discrete Almgren-Chriss optimal execution trajectory
 
-## Results
+## Efficiency Frontier:
 
-## Analysis
+## Testing the Model under Misspecification:
+
+## Analysis:
+
+## Disscusion:
 
 
