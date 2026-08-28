@@ -34,19 +34,17 @@ $N$: Total number of discrete trading blocks to sell the shares in.
 
 $T$: Time horizon to sell the holdings. 
 
+$\tau_k$: Duration of the $k_th$ trading block.
+
 $C$: Cost of liquidating entire position.
 
-$t_k$: The duration of the $k_{th}$ trading block.
-
 $n_k$: The number of shares sold in the $k_{th}$ trading block.
-
-$\tau_k$: The trading rate or "velocity" at the $k_{th}$ trading block i.e $n_k / t_k$
 
 $x_k$: The number of shares remaining after the $k_{th}$ trading block.
 
 $S_0$: The value of the initial $X$ shares.
 
-$S_k$: The value of the shares sold in the $k_{th}$ trading block. This is equivelent to $n_k$ times the current price of a share.
+$S_k$: The value of the shares sold in the $k_{th}$ trading block. This is equivalent to $n_k$ times the current price of a share.
 
 $\gamma$: Permanent market impact coefficient. 
 
@@ -54,7 +52,9 @@ $\lambda$: Risk aversion parameter that dictates willingness to be exposed to ma
 
 $\xi$: Fixed cost per share (spread).
 
-$\epsilon$: Gaussian noise sample (default $\mu = 0$, $\sigma$ = 1 ).
+$\sigma$: Volatility of the price (per unit time standard deviation)
+
+$\epsilon$: Standard Normal Gaussian noise sample.
 
 
 
@@ -64,12 +64,20 @@ Mathematically these can be written as a change in price of the remaining holdin
 
 $$S_k = S_{k-1} + \sigma \sqrt{\tau} \epsilon - \tau g(n_k / \tau)$$
 
-Here: $\tau$ the length of each discrete trading interval, $\sigma$: volatility, $\epsilon$ random noise, $g(\cdot)$ a function trade velocity dictates the market reaction of the sale. 
+Term 1: Previous price
+
+Term 2: Random Walk Term modelling the randomness of the price
+
+Term 3: Negative price term that is a function of the trading velocity and proportional to the duration of the trading block. This models the market reaction of the sale. 
 
 ### Short term impacts of each sale:
 Short term changes in the price of a asset caused by the presence of the trade in the market. 
 
-Mathematically these can be written as: $S_k = S_{k-1} + h(n_k / \tau)$ , where $h(\cdot)$ is commonly a cost that is a percentage of the amount of holding sold in the trading window.
+Mathematically these can be written as: $\tilde{S_k} = S_{k} - h(n_k / \tau)$ 
+
+Term 1: Previous Price
+
+Term 2: A function of the trading rate. This models the cost of executing the trade. If liquidate to fast there is insufficient buyers in the market so the price you can sell for decreases. 
 
 ### The result of the sale of the asset is:
 
