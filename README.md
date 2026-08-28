@@ -1,5 +1,5 @@
-# Liquidation Strategies
-Implementing and evaluating the Almgren-Chriss model and strategy for liquidising large holdings.
+# Comparing Liquidation Strategies in 4 different Market Conditions.
+Implementing and evaluating variations Almgren-Chriss model alongside common liquidation benchmark strategies in various market conditions.
 
 <img width="750" height="500" alt="image" src="https://github.com/user-attachments/assets/bacf0965-5e74-42de-89eb-6bf961c57f73" />
 
@@ -16,7 +16,7 @@ Interesting the way this relates to the equation of motion of for example a ball
 
 The actional functional $S= \int_{t_1}^{t2} L dt$ and the stationarity of this gives the equation of motion. 
 
-This project explores the Almgren-Chriss strategy for liquidation a large holding.  The problem is how to best liquidate a large holding, whilst minimising the risk of volatility in the market and minimising transaction costs arising from long and short term market impact.
+This project explores the Almgren-Chriss strategy and variations for liquidating large holdings.  The problem is how to best liquidate a large holding, whilst minimising the risk of volatility in the market and minimising transaction costs arising from long and short term market impact.
 
 Mathematically the problem can be described as follows:
 
@@ -29,7 +29,6 @@ In the case of Almgren-Chriss the action functional takes the trajectory of hold
 # Mathematics of the Problem
 
 ## Parameters:
-
 
 $X$: Total number of shares to sell.
 
@@ -126,10 +125,6 @@ $$J = \mathbb{E}[C] + \lambda \mathbb{V}[C] = \frac12\gamma X^2 + \xi\sum_{k=1}^
 
 where $\lambda$ trades off expected cost against the price risk of holding residual inventory $x_k$ over the remaining horizon.
 
-## Drawing Parallel's with Lagrangian Mechanics:
-
-TBC
-
 ## Optimal Solution to the Objective Function:
 
 Taking the above objective equation the first two terms are constants, assuming that holdings are never bought back. This means they do not effect the outcome of the trade and can be dropped. 
@@ -203,7 +198,14 @@ This plot is produced by calculating Expected Cost and Variance for different va
 
 The obvious result is that as you take more risk by staying in the market and selling slower the expected cost of the liquidation reduces. However this is under assumptions of neglected external non-symmetric drivers of price that could be occurring in the market. 
 
+
+
+
+
+
 ## Testing the Model under Misspecification:
+
+
 
 ## Analysis:
 
