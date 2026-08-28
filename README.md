@@ -1,5 +1,5 @@
 # Liquidation Strategies
-Implementing and evaluating the Almberg-Chriss model and strategy for liquidising large holdings.
+Implementing and evaluating the Almgren-Chriss model and strategy for liquidising large holdings.
 
 # Project Motivation and Overview
 
@@ -13,19 +13,19 @@ Interesting the way this relates to the equation of motion of for example a ball
 
 The actional functional $S= \int_{t_1}^{t2} L dt$ and the stationarity of this gives the equation of motion. 
 
-This project explores the Almberg-Chriss strategy for liquidation a large holding.  The problem is how to best liquidate a large holding, whilst minimising the risk of volatility in the market and minimising transaction costs arising from long and short term market impact.
+This project explores the Almgren-Chriss strategy for liquidation a large holding.  The problem is how to best liquidate a large holding, whilst minimising the risk of volatility in the market and minimising transaction costs arising from long and short term market impact.
 
 Mathematically the problem can be described as follows:
 
 The optimisation problem is given you have $X$ shares to liquidate over $N$ trading blocks, how many shares $n_k$ should be sold in each trading block, in order to minimise the expected cost of the sale. 
 
-The maths that draws parallel between the Almberg-Chriss and Lagrangian Mechanics is the use of calculus of variation used to find the stationarity of a action functional. 
+The maths that draws parallel between the Almgren-Chriss and Lagrangian Mechanics is the use of calculus of variation used to find the stationarity of a action functional. 
 
-In the case of Almberg-Chriss the action functional takes the trajectory of holdings kept at each trading block in a liquidation and returns the cost of the sale. The aim is to minimise this. 
+In the case of Almgren-Chriss the action functional takes the trajectory of holdings kept at each trading block in a liquidation and returns the cost of the sale. The aim is to minimise this. 
 
-## Mathematics of the Problem
+# Mathematics of the Problem
 
-### Parameters:
+## Parameters:
 
 
 $X$: Total number of shares to sell.
@@ -54,11 +54,13 @@ $\xi$: Fixed cost per share (spread).
 
 $\sigma$: Volatility of the price (per unit time standard deviation)
 
-$\epsilon$: Standard Normal Gaussian noise sample.
+$\epsilon_k$: Standard Normal Gaussian noise sample for the $k_{th}$ trading block.
 
+## Modelling the Costs of Trading:
 
+There are both long term and short term price impacts of liquidating stock. This provides the unattractive cost of selling a position too quickly.
 
-### Long term impacts of each sale:
+### Long-term  Price impacts of each sale:
 are those which affect the price of the holding after the sale is completed. 
 Mathematically these can be written as a change in price of the remaining holding: 
 
@@ -70,7 +72,7 @@ Term 2: Random Walk Term modelling the randomness of the price
 
 Term 3: Negative price term that is a function of the trading velocity and proportional to the duration of the trading block. This models the market reaction of the sale. 
 
-### Short term impacts of each sale:
+### Short-term Price impacts of each sale:
 Short term changes in the price of a asset caused by the presence of the trade in the market. 
 
 Mathematically these can be written as: $\tilde{S_k} = S_{k} - h(n_k / \tau)$ 
@@ -79,17 +81,21 @@ Term 1: Previous Price
 
 Term 2: A function of the trading rate. This models the cost of executing the trade. If liquidate to fast there is insufficient buyers in the market so the price you can sell for decreases. 
 
-### The result of the sale of the asset is:
+### Total Cost of Selling in each Trading Block:
 
-$$\sum_{k=1}^{N} n_k S_k = X S_0 + \sum_{k=1}^{N} \left( \sigma \sqrt{\tau} \epsilon_k - \tau g(n_k/\tau) \right) x_k - \sum_{k=1}^{N} n_k h(n_k/\tau)$$
+**Revenue:** The summation of number of shares sold at each price.
 
-We start from the general cost identity, valid for any impact functions $g$ and $h$:
+$$ \text{Revenue} = \sum_{k=1}^{N} n_k S_k = X S_0 + \sum_{k=1}^{N-1} \left( \sigma \sqrt{\tau} \epsilon_k - \tau g(n_k/\tau) \right) x_k - \sum_{k=1}^{N} n_k h(n_k/\tau)$$
 
-$$C = \sum_{k=1}^{N} \tau x_k\, g(n_k/\tau) + \sum_{k=1}^{N} n_k\, h(n_k/\tau) - \sigma\sqrt{\tau}\sum_{k=1}^{N} x_k \epsilon_k$$
+**Cost of Trading:** The difference between the revenue and the price of the holdings at the first trading block.
+
+$$C = \sum_{k=1}^{N} \tau x_k g(n_k/\tau) + \sum_{k=1}^{N} n_k h(n_k/\tau) - \sigma\sqrt{\tau}\sum_{k=1}^{N} x_k \epsilon_k$$
 
 This decomposes cost into permanent-impact drag, temporary-impact drag, and a noise contribution.
 
-**Linear impact assumption.** Almgren-Chriss assume that impact scales linearly with trading velocity $v = n_k/\tau$:
+**Linear impact assumption:** Almgren-Chriss assume that price impact scales linearly with trading velocity $v = n_k/\tau$:
+
+The impact functions $g(v)$ and $h(v)$ in the above equations are defined as per the Almgren-Chriss model.
 
 $$g(v) = \gamma v, \qquad h(v) = \xi\,\mathrm{sgn}(v) + \eta v$$
 
