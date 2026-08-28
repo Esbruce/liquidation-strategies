@@ -1,8 +1,6 @@
 # Liquidation Strategies
 Implementing and evaluating the Almberg-Chriss model and strategy for liquidising large holdings.
 
-<img width="1902" height="1043" alt="image" src="https://github.com/user-attachments/assets/c52f3a1d-1331-48e2-82be-2abc0f57b5d6" />
-
 # Project Motivation and Overview
 
 In my second year Engineering Mathematics module "Principles of Physical Modelling", we had a introduction to Lagrangian mechanics. In this module we learnt how to derive second order equations of motions using the Euler-Lagrange Equations. Initially the results seemed surprising and impressive and I wanted to delve deeper into why the maths works and where else is was applicable - leading me to following problem. 
@@ -28,6 +26,35 @@ In the case of Almberg-Chriss the action functional takes the trajectory of hold
 ## Mathematics of the Problem
 
 ### Parameters:
+
+
+$X$: Total number of shares to sell.
+
+$N$: Total number of discrete trading blocks to sell the shares in.
+
+$T$: Time horizon to sell the holdings. 
+
+$C$: Cost of liquidating entire position.
+
+$t_k$: The duration of the $k_{th}$ trading block.
+
+$n_k$: The number of shares sold in the $k_{th}$ trading block.
+
+$\tau_k$: The trading rate or "velocity" at the $k_{th}$ trading block i.e $n_k / t_k$
+
+$x_k$: The number of shares remaining after the $k_{th}$ trading block.
+
+$S_0$: The value of the initial $X$ shares.
+
+$S_k$: The value of the shares sold in the $k_{th}$ trading block. This is equivelent to $n_k$ times the current price of a share.
+
+$\gamma$: Permanent market impact coefficient. 
+
+$\lambda$: Risk aversion parameter that dictates willingness to be exposed to market volatility.
+
+$\xi$: Fixed cost per share (spread).
+
+$\epsilon$: Gaussian noise sample (default $\mu = 0$, $\sigma$ = 1 ).
 
 
 
