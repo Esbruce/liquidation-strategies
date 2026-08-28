@@ -105,7 +105,7 @@ $$g(v) = \gamma v, \qquad h(v) = \xi \mathrm{sgn}(v) + \eta v$$
 
 so permanent impact $g(v)$ is proportional to trading rate, and temporary impact $h(v)$ combines a fixed cost-per-share $\xi$ (spread/slippage) with a rate-proportional component $\eta$. 
 
-### Formulating Objective Function:
+## Formulating Objective Function:
 
 Substituting the impact functions and rearranging them cost becomes:
 
@@ -123,49 +123,54 @@ $$J = \mathbb{E}[C] + \lambda \mathbb{V}[C] = \frac12\gamma X^2 + \xi\sum_{k=1}^
 
 where $\lambda$ trades off expected cost against the price risk of holding residual inventory $x_k$ over the remaining horizon.
 
-### Drawing Parallel's with Lagrangian Mechanics:
+## Drawing Parallel's with Lagrangian Mechanics:
 
+TBC
 
+## Optimal Solution to the Objective Function:
 
-## Optimal Solution to the Objective Function
+Taking the above objective equation the first two terms are constants, assuming that holdings are never bought back. This means they do not effect the outcome of the trade and can be dropped. 
 
-Taking the above objective equation the first two terms are constants, assuming that holdings are never bought back. This means they do not effect the efficacy of the trade and can be dropped. 
 $$\tilde{J}(x_1,\dots,x_{N-1}) = \frac{\tilde\eta}{\tau}\sum_{k=1}^{N}(x_{k-1}-x_k)^2 + \lambda\sigma^2\tau\sum_{k=1}^{N} x_k^2$$
 
-### Convexity
+### Convexity of the Objective Function:
 
-The quadratic is convex as it is composed of squared terms with positive coefficients.  A property of this is that all zero gradient points is a global minimum. To find the optimal trajectory is equivalent to finding the point where every partial derivative vanishes.
+The quadratic is convex as it is composed of squared terms with positive coefficients.  A property of this is that all zero gradient points are global minima. 
 
-### Taking the partial derivative and setting it to zero
+To find the optimal trajectory is equivalent to finding the point where every partial derivative vanishes.
 
-Pick a generic representative interior index $j$, with $1 \le j \le N-1$ and take the partial derivative and set to zero.
+### Taking the partial derivatives:
+
+Picking a generic representative interior index $j$, with $1 \le j \le N-1$ and take the partial derivative and making it equal to zero.
 
 Differentiating with respect to $x_j$:
 
 $$\frac{\partial \tilde J}{\partial x_j} = \frac{\tilde\eta}{\tau}\Big[-2(x_{j-1}-x_j) + 2(x_j-x_{j+1})\Big] + 2\lambda\sigma^2\tau\, x_j = 0$$
+
 This holds for every $j = 1,\dots,N-1$, giving a system of $N-1$ equations that together pin down the minimizing trajectory.
 
-### Rearrange into a recursion
+### Rearrangement into recursion:
 
 Multiply through by $\tau/\tilde\eta$ and collect terms:
 
 $$x_{j+1} - 2x_j + x_{j-1} = \frac{\lambda\sigma^2\tau^2}{\tilde\eta}\, x_j$$
 
-Define $\kappa^2 \equiv \dfrac{\lambda\sigma^2}{\tilde\eta}$, so:
+Define $\kappa^2 \equiv (\lambda\sigma^2)/ (\tilde\eta)$, so:
 
 $$x_{j+1} - \big(2+\kappa^2\tau^2\big)x_j + x_{j-1} = 0$$
 
 This is a **linear, constant-coefficient recursion** relating each point on the optimal trajectory to its two neighbours.
 
-### Solve via the ansatz 
-
-$x_j = z^j$
+### Solve via the Ansatz $x_j = z^j$:
 
 For linear recursions of this type, the standard approach is to guess a solution of the form $x_j = z^j$ and find which values of $z$ are consistent with the equation. Substituting:
+
 $$z^{j+1} - (2+\kappa^2\tau^2)z^j + z^{j-1} = 0$$
 
 Dividing through by $z^{j-1}$ (assuming $z \ne 0$):
+
 $$z^2 - (2+\kappa^2\tau^2)z + 1 = 0$$
+
 This is the **characteristic equation** of the recursion. The two roots of the characteristic equation are $z = e^{\alpha}$ and $z = e^{-\alpha}$.
 
 Because the recursion is linear, the general solution is any combination of the two root-solutions:
