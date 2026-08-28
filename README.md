@@ -193,6 +193,13 @@ This is the discrete Almgren-Chriss optimal execution trajectory
 
 ## Efficiency Frontier:
 
+<img width="1536" height="855" alt="image" src="https://github.com/user-attachments/assets/048772a5-66a5-4fbe-821b-2b32eccea7dc" />
+
+Here is a graph I produced the shows the classic Almgren-Chriss efficiency frontier. The graph has expected cost of the strategy vs the exposure to volatility. 
+This plot is produced by calculating Expected Cost and Variance for different values of $\lambda$ (risk aversion parameter).
+
+The obvious result is that as you take more risk by staying in the market and selling slower the expected cost of the liquidation reduces. However this is under assumptions of neglected external non-symmetric drivers of price that could be occurring in the market. 
+
 ## Testing the Model under Misspecification:
 
 ## Analysis:
