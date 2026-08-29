@@ -1,32 +1,43 @@
-# Comparing Liquidation Strategies in 4 different Market Conditions.
-Implementing and evaluating variations Almgren-Chriss model alongside common liquidation benchmark strategies in various market conditions.
+# Implementation of Almgren-Chriss Optimal Liqudation Strategy and analysis of parameter misspecification.
 
 <img width="750" height="500" alt="image" src="https://github.com/user-attachments/assets/bacf0965-5e74-42de-89eb-6bf961c57f73" />
 
+# Project Overview and Motivation:
 
-# Project Motivation and Overview
+In my second year Engineering Mathematics module "Principles of Physical Modelling", I was introduced to Lagrangian mechanics and the Euler-Lagrange equations. This introduced me to **calculus of variations**, where an entire function or trajectory is optimised rather than a finite-dimensional set of variables.
 
-In my second year Engineering Mathematics module "Principles of Physical Modelling", we had a introduction to Lagrangian mechanics. In this module we learnt how to derive second order equations of motions using the Euler-Lagrange Equations. Initially the results seemed surprising and impressive and I wanted to delve deeper into why the maths works and where else is was applicable - leading me to following problem. 
+In mechanics, the action is a functional of the trajectory \(q(t)\),
 
-In mechanics the Lagrangian represents the difference in kinetic and potential energy of a body/particle $L = T - U$ where $T$ is the kinetic energy and $U$ is the potential energy.
+$$S[q]=\int_{t_1}^{t_2}L(q,\dot q,t)\,dt,$$
 
-The Lagrangian therefore is related to the the coordinates and motion of the body. $L = L(q(t),\dot{q}(t),t)$
+and requiring
 
-Interesting the way this relates to the equation of motion of for example a ball in the air is by the action functional (function that takes a function (ie a path through space $q(t)$ ) and returns a value).
+$$\delta S=0$$
 
-The actional functional $S= \int_{t_1}^{t2} L dt$ and the stationarity of this gives the equation of motion. 
+leads to the Euler-Lagrange equation
 
-This project explores the Almgren-Chriss strategy and variations for liquidating large holdings.  The problem is how to best liquidate a large holding, whilst minimising the risk of volatility in the market and minimising transaction costs arising from long and short term market impact.
+$$\frac{\partial L}{\partial q}-\frac{d}{dt}\left(\frac{\partial L}{\partial\dot q}\right)=0.$$
 
-Mathematically the problem can be described as follows:
+The Almgren-Chriss model presents a direct application of the same mathematics to optimal trade execution. Instead of optimising a physical trajectory \(q(t)\), the problem is to find the optimal **liquidation trajectory** \(x(t)\), where \(x(t)\) represents the remaining number of shares.
 
-The optimisation problem is given you have $X$ shares to liquidate over $N$ trading blocks, how many shares $n_k$ should be sold in each trading block, in order to minimise the expected cost of the sale. 
+The objective can similarly be expressed as a functional,
 
-The maths that draws parallel between the Almgren-Chriss and Lagrangian Mechanics is the use of calculus of variation used to find the stationarity of a action functional. 
+$$J[x]=\int_0^T L(x,\dot x,t)\,dt,$$
 
-In the case of Almgren-Chriss the action functional takes the trajectory of holdings kept at each trading block in a liquidation and returns the cost of the sale. The aim is to minimise this. 
+where \(L\) represents the cost and risk associated with the trading trajectory. Applying the same variational principle,
 
-# Original Almgren-Chriss Model:
+$$\delta J=0,$$
+
+and the Euler-Lagrange equation gives the differential equation governing the optimal liquidation trajectory.
+
+Thus, the mathematical connection explored in this project is specifically the application of **calculus of variations and the Euler-Lagrange equation to a different optimisation problem**: replacing a physical trajectory with a trading trajectory and the mechanical Lagrangian with an execution cost function.
+
+# Mathematics of the Almgren-Chriss Model:
+
+Mathematically the problem the model solves can be described as follows:
+
+A holding of size $X$ is being sold in $K$ increments such that the quantity of each sale is notated as $n_1, n_k ... n_N$. $x_k$ is the remaining amount of the holding that needs to be sold. This is happening in a time frame of $T$ such that all holdings are sold by $t=T$
+What is the best trading trajectory to minimise cost?
 
 ## Parameters:
 
@@ -187,7 +198,13 @@ Solving this $2\times2$ system for $A$ and $B$ and substituting back (using $\si
 
 $$x_j = X\,\frac{\sinh\big(\alpha(N-j)\big)}{\sinh(\alpha N)}$$
 
-This is the discrete Almgren-Chriss optimal execution trajectory
+This is the discrete Almgren-Chriss optimal execution trajectory.
+
+# Running the Code:
+
+The two models are written as python classes in the project. The main Almgren-Chriss model and the TWAP model used as a benchmark comparison. Each model is written in its own python file ie almgren_chriss.py, analysis_compare.py.
+To run the models to gain results run scripts monte_carlo_compare.py, monte_carlo_ac.py. Afterwards analysis scripts can be run analysis_compare.py.
+Functions.py contains helper functions used.
 
 ## Efficiency Frontier:
 
@@ -218,334 +235,13 @@ However, because it does not adapt to market conditions, it may not be the most 
 
 TWAP will therefore be used as the basic benchmark strategy throughout the testing.
 
-# VWAP (Volume Weighted Average Pricing) Benchmark Strategy:
-
-VWAP is similar to TWAP but instead of selling an equal number of shares in each trading block, the strategy attempts to trade in proportion to the expected market volume.
-
-If $V_k$ is the expected market volume in trading block $k$, then the proportion of the total market volume occurring in that block is:
-
-$$w_k = \frac{V_k}{\sum_{i=1}^{N}V_i}$$
-
-The number of shares sold by the strategy is then:
-
-$$n_k = Xw_k$$
-
-and the remaining inventory is:
-
-$$x_k = X-\sum_{i=1}^{k}n_i$$
-
-The idea behind VWAP is that trading more when market volume is high should reduce the market impact of the trade, as there are more buyers and sellers available.
-
-Unlike TWAP, VWAP therefore uses information about the expected shape of the market volume throughout the trading period.
-
-However, it still does not directly account for the risk of holding the remaining inventory while the market moves.
-
-# Comparing the Strategies:
-
-The strategies being tested are therefore:
-
-| Strategy | Main idea | Adapts to volatility | Adapts to liquidity | Risk aware |
-| ---- | ---- | ---- | ---- | ---- |
-| TWAP | Sell at a constant rate | No | No | No |
-| VWAP | Sell in proportion to expected volume | No | Yes | No |
-| AC | Optimise cost against risk | Through $\lambda$ | Through impact parameters | Yes |
-| Adaptive AC | Recalculate AC as conditions change | Yes | Yes | Yes |
-
-The purpose of including these different strategies is not simply to determine which strategy has the lowest average cost. Each strategy makes different assumptions about the market, so the more interesting question is how their relative performance changes when these assumptions are no longer true.
-
-# Testing the Model under Different Market Conditions:
-
-The original Almgren-Chriss model assumes constant parameters throughout the liquidation. In particular, volatility $\sigma$ and the market impact parameters are assumed to remain constant.
-
-This is unlikely to be completely representative of a real market. To investigate how important these assumptions are, the strategies will be tested under four different market conditions.
-
-## 1. Normal Market Conditions:
-
-The baseline case where all model parameters remain constant throughout the liquidation.
-
-$$\sigma_t = \sigma_0$$
-
-$$\eta_t = \eta_0$$
-
-The purpose of this test is to establish how the strategies perform when the assumptions of the original AC model are approximately satisfied.
-
-This provides a control case for the other experiments.
-
-## 2. High Volatility:
-
-In this scenario the volatility of the market increases during the liquidation.
-
-For example, at some point during the liquidation:
-
-$$\sigma_t =
-\begin{cases}
-\sigma_0 & t < T/2 \\
-2\sigma_0 & t \geq T/2
-\end{cases}
-$$
-
-This represents a sudden increase in the uncertainty of the market price.
-
-The original AC strategy will still follow the trajectory calculated using the initial value of $\sigma$.
-
-The Adaptive AC strategy will instead observe the increase in volatility and recalculate its optimal liquidation trajectory.
-
-This allows the question to be tested:
-
-**Does adapting to changing volatility improve liquidation performance?**
-
-## 3. Low Liquidity:
-
-In this scenario the market becomes less liquid during the liquidation.
-
-This can be represented by increasing the temporary market impact coefficient:
-
-$$\eta_t =
-\begin{cases}
-\eta_0 & t < T/2 \\
-2\eta_0 & t \geq T/2
-\end{cases}
-$$
-
-A higher $\eta$ means that executing a large quantity in a short period produces a greater price impact.
-
-This scenario tests how the strategies respond when it becomes more expensive to trade quickly.
-
-VWAP should potentially benefit from trading more heavily during periods of high expected volume, while AC should account for the increased cost of rapid execution through its market impact parameters.
-
-## 4. Volatility and Liquidity Shock:
-
-The final scenario combines the two previous cases.
-
-At $T/2$, both volatility and market impact increase:
-
-$$\sigma_t =
-\begin{cases}
-\sigma_0 & t < T/2 \\
-2\sigma_0 & t \geq T/2
-\end{cases}
-$$
-
-$$\eta_t =
-\begin{cases}
-\eta_0 & t < T/2 \\
-2\eta_0 & t \geq T/2
-\end{cases}
-$$
-
-This creates a more difficult market condition where both the cost of trading quickly and the risk of holding the remaining position increase.
-
-This should provide the strongest test of whether an adaptive strategy provides an advantage over a strategy calculated once at the beginning of the liquidation.
-
-# Adaptive Almgren-Chriss Strategy:
-
-The original AC strategy calculates the optimal trajectory using the market parameters at the beginning of the liquidation.
-
-The Adaptive AC strategy instead recalculates the optimal trajectory as new information about the market becomes available.
-
-For example, the strategy can operate in the following way:
-
-1. Estimate the current market parameters.
-2. Calculate the optimal AC trajectory.
-3. Execute the next group of trading blocks.
-4. Observe the new market conditions.
-5. Update the model parameters.
-6. Recalculate the optimal trajectory using the remaining inventory and remaining time.
-7. Continue until the position is fully liquidated.
-
-This is essentially a repeated application of the original AC optimisation rather than creating an entirely new optimisation problem.
-
-The important difference is therefore:
-
-$$
-\text{Original AC:}
-\qquad
-\text{Parameters estimated once}
-$$
-
-$$
-\text{Adaptive AC:}
-\qquad
-\text{Parameters updated throughout liquidation}
-$$
-
-The Adaptive AC strategy can therefore respond to changes in volatility and liquidity that were not known when the initial trajectory was calculated.
-
-# Testing Method:
-
-To compare the strategies fairly, each strategy will be tested using the same simulated market conditions.
-
-For each market condition, a large number of price paths will be generated using the same underlying stochastic process.
-
-For each simulation the strategies will start with the same:
-
-$$X,\quad T,\quad S_0$$
-
-and will be subject to the same realised price movements.
-
-This means that differences in performance should be caused by the liquidation strategy rather than different random price paths.
-
-For each strategy and market condition, the simulation will be repeated many times using different samples of the random price process.
-
-The resulting implementation shortfall will then be compared between strategies.
-
-The main quantities measured will be:
-
-### Mean Implementation Shortfall:
-
-$$\mathbb{E}[C]$$
-
-This measures the average cost of liquidating the position.
-
-A lower value indicates that the strategy is cheaper on average.
-
-### Standard Deviation of Implementation Shortfall:
-
-$$\sqrt{\mathbb{V}[C]}$$
-
-This measures the variability of the liquidation cost.
-
-A lower value means that the execution result is more predictable.
-
-### Value at Risk:
-
-The $95\%$ Value at Risk measures a high-cost outcome of the liquidation.
-
-This can be estimated from the simulated distribution of costs.
-
-### Conditional Value at Risk:
-
-The $95\%$ Conditional Value at Risk measures the average cost of the worst $5\%$ of simulated outcomes.
-
-This is useful for comparing how the strategies behave during particularly poor executions.
-
-### Probability of Beating TWAP:
-
-For each strategy the proportion of simulations where it achieves a lower implementation shortfall than TWAP can be calculated:
-
-$$
-P(C_{\text{strategy}} < C_{\text{TWAP}})
-$$
-
-This gives a measure of how consistently the strategy outperforms the simple benchmark rather than only comparing average performance.
-
 # Results:
 
-The results will be presented separately for each of the four market conditions.
+<img width="800" height="500" alt="image" src="https://github.com/user-attachments/assets/dae74426-5a77-4a46-ab7b-f7c85e91f366" />
+<img width="800" height="500" alt="image" src="https://github.com/user-attachments/assets/b6915024-f807-4c1f-ab3a-b67ca229e989" />
+<img width="800" height="500" alt="image" src="https://github.com/user-attachments/assets/5ef9ca32-18a7-4cac-9098-c7acceb0572b" />
+<img width="800" height="500" alt="image" src="https://github.com/user-attachments/assets/273b0f0d-3e04-49de-97b1-81ac784ccac7" />
 
-The main comparison will be between:
-
-$$
-\boxed{\text{TWAP},\quad \text{VWAP},\quad \text{AC},\quad \text{Adaptive AC}}
-$$
-
-For each strategy the following will be compared:
-
-| Strategy | Mean Cost | Standard Deviation | $VaR_{95}$ | $CVaR_{95}$ | Probability of beating TWAP |
-| ---- | ---- | ---- | ---- | ---- | ---- |
-| TWAP | - | - | - | - | - |
-| VWAP | - | - | - | - | - |
-| AC | - | - | - | - | - |
-| Adaptive AC | - | - | - | - | - |
-
-The same table can then be produced for each of the four market conditions.
-
-# Analysis:
-
-The first comparison is between the strategies under normal market conditions.
-
-Under the assumptions of the original AC model, AC should provide a good balance between expected transaction cost and exposure to price volatility. TWAP provides a useful baseline because it makes no attempt to optimise this trade-off.
-
-The VWAP strategy should perform differently depending on the shape of the expected market volume. Its main advantage is that it attempts to execute when there is greater liquidity.
-
-The more interesting comparison is between the original AC and Adaptive AC strategies.
-
-Under stable market conditions there may be little difference between the two strategies, as the parameters used to calculate the initial AC trajectory remain approximately correct.
-
-However, when the market conditions change during the liquidation, the original AC strategy continues following a trajectory calculated using outdated parameters.
-
-The Adaptive AC strategy can instead respond to the new conditions.
-
-For example, if volatility increases, the risk associated with holding the remaining inventory increases. This should encourage the Adaptive AC strategy to liquidate more quickly.
-
-Similarly, if market impact increases, executing too quickly becomes more expensive. This creates a competing incentive to slow the liquidation.
-
-The combined volatility and liquidity shock is therefore particularly interesting because the two effects push the optimal strategy in different directions.
-
-# Model Misspecification:
-
-A further test is to deliberately use incorrect parameters when calculating the original AC trajectory.
-
-The true market may have parameters:
-
-$$
-\sigma,\quad \eta
-$$
-
-but the strategy may estimate:
-
-$$
-\hat{\sigma},\quad \hat{\eta}.
-$$
-
-The effect of this can be tested by varying the ratio between estimated and true parameters.
-
-For example:
-
-$$
-\frac{\hat{\sigma}}{\sigma}
-\in
-\{0.5,1,2\}
-$$
-
-and
-
-$$
-\frac{\hat{\eta}}{\eta}
-\in
-\{0.5,1,2\}.
-$$
-
-This tests how sensitive the performance of AC is to errors in its assumptions.
-
-A heatmap can then be produced showing the relative performance of AC compared to TWAP for different levels of parameter error.
-
-This is useful because the theoretical AC solution is optimal when the model parameters are correct, but in a real market these parameters must be estimated and will therefore contain some degree of error.
-
-The main question is therefore:
-
-**How much does the performance of AC deteriorate when the parameters used to calculate the optimal trajectory are wrong?**
-
-# Discussion:
-
-The main aim of this project is not simply to find which strategy produces the lowest average cost.
-
-Instead, it is to investigate how the assumptions made by each strategy affect its performance.
-
-TWAP makes very few assumptions and therefore provides a simple and robust benchmark, but it does not take advantage of information about market liquidity or volatility.
-
-VWAP uses expected market volume to determine when to trade, potentially reducing market impact, but it does not explicitly consider the risk of holding the remaining inventory.
-
-AC explicitly balances transaction costs against price risk and therefore provides a more theoretically informed strategy. However, its performance depends on the parameters used in the model remaining reasonably representative of the market.
-
-Adaptive AC attempts to address this limitation by updating the model as market conditions change.
-
-The results from the four market conditions should therefore show whether the additional complexity of Adaptive AC provides a meaningful improvement over the original AC strategy.
-
-A particularly important result would be a situation where AC performs well under the conditions for which it was designed but performs worse when its assumptions are violated. This would demonstrate the importance of model robustness rather than simply showing that a more complicated strategy is always better.
-
-# Conclusion:
-
-The Almgren-Chriss model provides a mathematically elegant solution to the problem of liquidating a large position while balancing market impact against price risk.
-
-The efficient frontier demonstrates this trade-off clearly, showing that accepting greater exposure to volatility can reduce expected transaction costs.
-
-However, the model relies on assumptions about the market which may not remain true throughout a liquidation.
-
-By comparing TWAP, VWAP, AC and Adaptive AC under different volatility and liquidity conditions, the aim is to investigate how robust these strategies are when the market changes.
-
-The key research question is therefore:
-
-> **How robust is the Almgren-Chriss optimal execution strategy to model misspecification and changing market conditions?**
-
-The results should provide insight into whether the theoretical optimality of Almgren-Chriss translates into an advantage when the assumptions of the model are no longer perfectly satisfied.
+Looking at the above histograms. It shows that the Almberg-Chriss model increases its performance lead over TWAP in more illiquid markets. This is expected as it has the ability to decrease the rate of selling as a strategy. 
+A further trivial observation to make is that the greatest discrepancy occurs when the market it highly illiquid and not volatile, as the model can decrease the rate of trading without exposing itself to much risk. 
+This analysis has only confirmed expected results. A issue with this analysis is defining market conditions on arbitrary values of $\eta$ and $\sigma$. 
