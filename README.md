@@ -1,4 +1,4 @@
-# Implementation of Almgren-Chriss Optimal Liqudation Strategy and analysis of parameter misspecification.
+# Implementation of Almgren-Chriss Optimal Liquidation Strategy.
 
 <img width="750" height="500" alt="image" src="https://github.com/user-attachments/assets/bacf0965-5e74-42de-89eb-6bf961c57f73" />
 
